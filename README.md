@@ -1,0 +1,1 @@
+A fork of [http://www.eyecon.ro/bootstrap-colorpicker/](http://www.eyecon.ro/bootstrap-colorpicker/) without the bootstrap dependency

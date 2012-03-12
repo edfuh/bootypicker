@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  
+  <link rel="stylesheet" href="booty-colorpicker.css" type="text/css" />
+</head>
+<body>
+  <div>
+    <input type="text" class="input" value="#BADA55" data-color-format="hex"/>
+  </div>
+
+  <div class="input-append color clearfix" data-color="#7e57e5" data-color-format="hex">
+    <input type="text" />
+    <span class="add-on">
+      <i style="background-color:#7e57e5"></i>
+    </span>
+  </div>
+  <script src="//code.jquery.com/jquery-latest.js"></script>
+  <script src="booty-colorpicker.js"></script>
+  <script>
+    $('.color, .input').colorpicker();
+  </script>
+</body>
+</html>
