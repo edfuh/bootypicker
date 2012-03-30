@@ -7,11 +7,11 @@
 *
 */
 
-.input-append input:focus {
+.colorpicker-component input:focus {
   position: relative;
   z-index: 2;
 }
-.input-append .add-on {
+.colorpicker-component .add-on {
   float: left;
   display: block;
   width: auto;
@@ -36,7 +36,13 @@
   -moz-border-radius: 0 3px 3px 0;
   border-radius: 0 3px 3px 0;
 }
-.input-append input {
+.colorpicker-component .add-on i {
+  display: block;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+.colorpicker-component input {
   float: left;
   margin-left: 0;
   width: 130px;
@@ -47,10 +53,10 @@
   border-radius: 3px 0 0 3px;
 }
 
-.input-append input:first-child {
+.colorpicker-component input:first-child {
   *margin-left: -160px;
 }
-.input-append input:first-child + .add-on {
+.colorpicker-component input:first-child + .add-on {
   *margin-left: -21px;
 }
 .ui-colorpicker {
@@ -142,7 +148,6 @@
   display: none;
 }
 .ui-colorpicker {
-  *zoom: 1;
   top: 0;
   left: 0;
   padding: 4px;
@@ -152,11 +157,20 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+
+.colorpicker-component,
+.ui-colorpicker {
+  *zoom:1;
+}
+
+.colorpicker-component:before,
+.colorpicker-component:after,
 .ui-colorpicker:before,
 .ui-colorpicker:after {
   display: table;
   content: "";
 }
+.colorpicker-component:after,
 .ui-colorpicker:after {
   clear: both;
 }
@@ -187,7 +201,7 @@
 .ui-colorpicker.alpha {
   min-width: 140px;
 }
-.ui-colorpicker.alpha .alpha {
+.ui-colorpicker.alpha-mode .alpha {
   display: block;
 }
 .ui-colorpicker .color {
@@ -199,10 +213,4 @@
 }
 .ui-colorpicker .color div {
   height: 10px;
-}
-.input-append.color .add-on i {
-  display: block;
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
 }
