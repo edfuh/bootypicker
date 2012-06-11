@@ -18,12 +18,16 @@
  * ========================================================= */
 
 (function (root, factory) {
+  "use strict";
+
   if (typeof define === 'function' && define.amd) {
     define(['jquery'], factory);
   } else {
-    factory(this.jQuery);
+    factory(jQuery);
   }
 }(this, function ($) {
+
+  "use strict";
 
   var CPGlobal = {
 
@@ -50,7 +54,7 @@
       },
 
       hex : function () {
-        return  this.color.toHex();
+        return this.color.toHex();
       }
     },
 
@@ -67,13 +71,6 @@
         maxTop: 100,
         callLeft: false,
         callTop: 'setHue'
-      },
-
-      alpha: {
-        maxLeft: 0,
-        maxTop: 100,
-        callLeft: false,
-        callTop: 'setAlpha'
       }
     },
 
@@ -121,16 +118,7 @@
     },
 
     HSLtoRGB: function (h, s, l, a) {
-      var
-        q,
-        p,
-        tr,
-        tg,
-        tb,
-        r,
-        g,
-        b
-      ;
+      var q, p, tr, tg, tb, r, g, b;
 
       if (s < 0) {
         s = 0;
@@ -211,8 +199,11 @@
     ],
     template: '<div class="ui-colorpicker">' +
               '<div class="saturation"><i><b></b></i></div>' +
-              '<div class="hue"><i></i></div>' +
-              '<div class="alpha"><i></i></div>' +
+              '<div class="modifiers">' +
+                '<div class="hue"><i></i></div>' +
+                '<div class="transparent"></div>' +
+              '</div>' +
+              '<input />' +
               '<div class="color"><div /></div>' +
               '</div>'
   };
@@ -296,7 +287,7 @@
 
     toHex: function (h, s, b, a) {
       var rgb = this.toRGB(h, s, b, a);
-      return '#' + ((1 << 24) | (parseInt(rgb.r) << 16) | (parseInt(rgb.g) << 8) | parseInt(rgb.b)).toString(16).substr(1);
+      return '#' + ((1 << 24) | (parseInt(rgb.r, 10) << 16) | (parseInt(rgb.g, 10) << 8) | parseInt(rgb.b, 10)).toString(16).substr(1);
     },
 
     toHSL: function (h, s, b, a) {
@@ -343,22 +334,20 @@
 
     if (this.isInput) {
       this.element.on({
-        'focus': $.proxy(this.show, this),
-        'keyup': $.proxy(this.update, this)
+        focus : $.proxy(this.show, this),
+        keyup : $.proxy(this.update, this)
       });
     } else if (this.component) {
       this.component.on({
-        'click': $.proxy(this.show, this)
+        click : $.proxy(this.show, this)
+      });
+      this.picker.find('input').on({
+        keyup : $.proxy(this.update, this)
       });
     } else {
       this.element.on({
-        'click': $.proxy(this.show, this)
+        click : $.proxy(this.show, this)
       });
-    }
-
-    if (format === 'rgba' || format === 'hsla') {
-      this.picker.addClass('alpha-mode');
-      this.alpha = this.picker.find('.alpha')[0].style;
     }
 
     if (this.component) {
@@ -396,7 +385,7 @@
     },
 
     update: function () {
-      this.color = new Color(this.isInput ? this.element.prop('value') : this.element.data('color'));
+      this.color = new Color(this.isInput ? this.element.val() : this.element.data('color'));
       this.picker.find('i')
         .eq(0).css({left: this.color.value.s * 100, top: 100 - this.color.value.b * 100}).end()
         .eq(1).css('top', 100 * (1 - this.color.value.h)).end()
@@ -412,11 +401,11 @@
           'mousedown': this.hide
         });
         if (this.component) {
-          this.element.find('input').prop('value', this.format.call(this));
+          this.element.find('input').val(this.format.call(this));
         }
         this.element.data('color', this.format.call(this));
       } else {
-        this.element.prop('value', this.format.call(this));
+        this.element.val(this.format.call(this));
       }
       this.element.trigger({
         type: 'hide',
@@ -464,8 +453,14 @@
           sliderType = CPGlobal.sliders.saturation;
         } else if (zone.is('.hue')) {
           sliderType = CPGlobal.sliders.hue;
-        } else if (zone.is('.alpha')) {
-          sliderType = CPGlobal.sliders.alpha;
+        } else if (zone.is('.transparent')) {
+          if (this.component) {
+            this.element.find('input').val('transparent');
+            this.picker.find('input').val('transparent');
+          } else {
+            this.element.val('transparent');
+          }
+          return;
         }
 
         this.slider = $.extend({}, sliderType);
