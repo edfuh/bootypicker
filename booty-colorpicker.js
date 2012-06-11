@@ -544,7 +544,7 @@
         data = new Colorpicker(this, $.extend({}, $.fn.colorpicker.defaults, options));
         $this.data('colorpicker', data);
       }
-      if (typeof option === 'string') {
+      if (typeof option === 'string' && typeof data[option] === 'function') {
         data[option]();
       }
     });
