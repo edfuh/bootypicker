@@ -552,6 +552,4 @@
 
   $.fn.colorpicker.defaults = {};
 
-  $.fn.colorpicker.Constructor = Colorpicker;
-
 }));
