@@ -329,8 +329,9 @@
     this.component = this.element.is('.colorpicker-component') ? this.element.find('.add-on') : false;
 
     this.picker = $(CPGlobal.template)
-              .appendTo('body')
-              .on('mousedown', '.saturation, .hue, .transparent', $.proxy(this.mousedown, this));
+              .appendTo('body');
+
+    this.picker.find('.saturation, .hue, .transparent, input').on('mousedown', $.proxy(this.mousedown, this));
 
     if (this.isInput) {
       this.element.on({
@@ -341,9 +342,15 @@
       this.component.on({
         click : $.proxy(this.show, this)
       });
-      this.picker.find('input').on({
-        keyup : $.proxy(this.update, this)
-      });
+      this.picker.find('input').on('keyup', $.proxy(function (e) {
+          this.element.data('color', e.target.value)
+          this.update(false);
+          this.element.trigger({
+            type: 'changeColor',
+            color: this.color
+          });
+        }, this)
+      );
     } else {
       this.element.on({
         click : $.proxy(this.show, this)
@@ -353,8 +360,6 @@
     if (this.component) {
       this.picker.find('.color').hide();
       this.preview = this.element.find('i')[0].style;
-    } else {
-      this.preview = this.picker.find('div:last')[0].style;
     }
 
     this.base = this.picker.find('div:first')[0].style;
@@ -375,22 +380,24 @@
           e.preventDefault();
         }
       }
-      $(document).on({
-        'mousedown': $.proxy(this.hide, this)
-      });
+
+      $(document).on('mousedown', $.proxy(this.hide, this));
+
       this.element.trigger({
         type: 'show',
         color: this.color
       });
     },
 
-    update: function () {
+    update: function (e) {
       this.color = new Color(this.isInput ? this.element.val() : this.element.data('color'));
       this.picker.find('i')
         .eq(0).css({left: this.color.value.s * 100, top: 100 - this.color.value.b * 100}).end()
         .eq(1).css('top', 100 * (1 - this.color.value.h)).end()
         .eq(2).css('top', 100 * (1 - this.color.value.a));
-      this.previewColor();
+      if (e !== false) {
+        this.previewColor();
+      };
     },
 
     hide: function () {
@@ -407,6 +414,9 @@
       } else {
         this.element.val(this.format.call(this));
       }
+
+      this.previewColor();
+
       this.element.trigger({
         type: 'hide',
         color: this.color
@@ -439,7 +449,6 @@
 
     mousedown: function (e) {
       e.stopPropagation();
-      e.preventDefault();
 
       var
         target = $(e.target),
@@ -449,36 +458,37 @@
         sliderType
       ;
 
-      if (!zone.is('.ui-colorpicker')) {
-        if (zone.is('.saturation')) {
-          sliderType = CPGlobal.sliders.saturation;
-        } else if (zone.is('.hue')) {
-          sliderType = CPGlobal.sliders.hue;
-        } else if (zone.is('.transparent')) {
-          if (this.component) {
-            this.element.find('input').val('transparent');
-            this.picker.find('input').val('transparent');
-          }
-          return;
-        }
-
-        this.slider = $.extend({}, sliderType);
-        offset = zone.offset();
-        //reference to knob's style
-        this.slider.knob = zone.find('i')[0].style;
-        this.slider.left = e.pageX - offset.left;
-        this.slider.top = e.pageY - offset.top;
-        this.pointer = {
-          left: e.pageX,
-          top: e.pageY
-        };
-        //trigger mousemove to move the knob to the current position
-        $(document).on({
-          mousemove: $.proxy(this.mousemove, this),
-          mouseup: $.proxy(this.mouseup, this)
-        }).trigger('mousemove');
+      if (zone.is('ui-colorpicker')) {
+        e.preventDefault();
       }
-      return false;
+
+      if (zone.is('.saturation')) {
+        sliderType = CPGlobal.sliders.saturation;
+      } else if (zone.is('.hue')) {
+        sliderType = CPGlobal.sliders.hue;
+      } else if (zone.is('.transparent')) {
+        if (this.component) {
+          this.element.find('input').val('transparent');
+          this.picker.find('input').val('transparent');
+        }
+        return;
+      }
+
+      this.slider = $.extend({}, sliderType);
+      offset = zone.offset();
+      //reference to knob's style
+      this.slider.knob = zone.find('i')[0].style;
+      this.slider.left = e.pageX - offset.left;
+      this.slider.top = e.pageY - offset.top;
+      this.pointer = {
+        left: e.pageX,
+        top: e.pageY
+      };
+      //trigger mousemove to move the knob to the current position
+      $(document).on({
+        mousemove: $.proxy(this.mousemove, this),
+        mouseup: $.proxy(this.mouseup, this)
+      }).trigger('mousemove');
     },
 
     mousemove: function (e) {
