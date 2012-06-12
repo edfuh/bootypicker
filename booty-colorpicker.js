@@ -330,7 +330,7 @@
 
     this.picker = $(CPGlobal.template)
               .appendTo('body')
-              .on('mousedown', $.proxy(this.mousedown, this));
+              .on('mousedown', '.saturation, .hue, .transparent', $.proxy(this.mousedown, this));
 
     if (this.isInput) {
       this.element.on({
@@ -430,6 +430,7 @@
       if (this.alpha) {
         this.alpha.backgroundColor = this.color.toHex();
       }
+      this.picker.find('input').val(this.color.toHex());
     },
 
     pointer: null,
@@ -457,8 +458,6 @@
           if (this.component) {
             this.element.find('input').val('transparent');
             this.picker.find('input').val('transparent');
-          } else {
-            this.element.val('transparent');
           }
           return;
         }
